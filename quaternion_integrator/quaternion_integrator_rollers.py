@@ -109,6 +109,8 @@ class QuaternionIntegratorRollers(object):
       self.tolerance = tolerance
     return 
 
+    self.shear = None
+
   def advance_time_step(self, dt, *args, **kwargs):
     '''
     Advance time step with integrator self.scheme
@@ -978,6 +980,11 @@ class QuaternionIntegratorRollers(object):
     if np.any(sol_precond):
       velocity += self.mobility_trans_times_torque(r_vectors_blobs, sol_precond, self.eta, self.a, periodic_length = self.periodic_length)
     
+    # Add shear 
+    for k, b in enumerate(self.bodies):
+      velocity[3*k] += self.shear[2]*b.location[2]
+
+     
     # Return linear velocity and torque
     return velocity, sol_precond
       
